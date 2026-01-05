@@ -5,17 +5,11 @@ WORKDIR /src
 
 COPY go.mod go.sum ./
 
-RUN --mount=type=cache,target=/go/pkg/mod \
-    go mod download
+RUN go mod download
 
 COPY app ./app
 
-# 🔍 DEBUG: show Go build cache size (Alpine-safe)
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    sh -c "du -sh /root/.cache/go-build || true"
-
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    go build -o app ./app
+RUN go build -o app ./app
 
 FROM alpine:latest
 WORKDIR /app
