@@ -3,12 +3,17 @@
 FROM golang:1.21-alpine AS builder
 WORKDIR /src
 
-COPY go.mod ./
+# ✅ COPY BOTH FILES
+COPY go.mod go.sum ./
+
+# Module cache
 RUN --mount=type=cache,target=/go/pkg/mod \
     go mod download
 
+# Source code
 COPY app ./app
 
+# Build cache
 RUN --mount=type=cache,target=/root/.cache/go-build \
     go build -o app ./app
 
