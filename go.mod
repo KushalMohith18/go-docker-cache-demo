@@ -1,4 +1,4 @@
-module github.com/yourname/go-docker-cache-demo
+module github.com/KushalMohith18/go-docker-cache-demo
 
 go 1.21
 
