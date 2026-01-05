@@ -1,4 +1,4 @@
-name: Docker Build (Buildx + GHA Cache)
+name: Docker Build (Buildx + actions/cache)
 
 on:
   push:
@@ -9,16 +9,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout source
       - name: Checkout source
         uses: actions/checkout@v4
 
+      # 2️⃣ Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 3️⃣ Restore Buildx local cache
+      - name: Restore Docker Buildx cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # 4️⃣ Build Docker image using local cache
       - name: Build Docker image (with cache)
         run: |
           docker buildx build \
             --progress=plain \
-            --cache-from=type=gha \
-            --cache-to=type=gha,mode=max \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max \
             -t go-docker-cache-demo:test .
+
+      # 5️⃣ Move cache (important)
+      - name: Move Buildx cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
