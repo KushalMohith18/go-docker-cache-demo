@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/yourname/go-docker-cache-demo/app/handlers"
+	"github.com/KushalMohith18/go-docker-cache-demo/app/handlers"
 )
 
 func RegisterRoutes() {
